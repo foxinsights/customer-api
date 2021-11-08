@@ -1,0 +1,209 @@
+openapi: 3.0.1
+info:
+  title: FoxInsights Customer API
+  description: API tailored to end customers who wish to import their Fox devices' data into their own system
+  version: '1'
+servers:
+  - url: https://api.oilfox.io
+paths:
+  /customer-api/v1/token:
+    post:
+      tags:
+        - customer-api-controller
+      operationId: refreshToken_2
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                refresh_token:
+                  type: string
+              required:
+                - refresh_token
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+          headers:
+            x-api-warn:
+              schema:
+                type: string
+              description: Included when a deprecated API version is used
+            x-current-api-version:
+              schema:
+                type: integer
+              description: Contains current API version
+  /customer-api/v1/login:
+    post:
+      tags:
+        - customer-api-controller
+      operationId: login_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+          headers:
+            x-api-warn:
+              schema:
+                type: string
+              description: Included when a deprecated API version is used
+            x-current-api-version:
+              schema:
+                type: integer
+              description: Contains current API version
+  /customer-api/v1/device:
+    get:
+      tags:
+        - customer-api-controller
+      operationId: getDevices_1
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ItemListDevice'
+          headers:
+            x-api-warn:
+              schema:
+                type: string
+              description: Included when a deprecated API version is used
+            x-current-api-version:
+              schema:
+                type: integer
+              description: Contains current API version
+      security:
+        - jwt: []
+  /customer-api/v1/device/{hwid}:
+    get:
+      tags:
+        - customer-api-controller
+      operationId: getDevices_2
+      parameters:
+        - name: hwid
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Device'
+          headers:
+            x-api-warn:
+              schema:
+                type: string
+              description: Included when a deprecated API version is used
+            x-current-api-version:
+              schema:
+                type: integer
+              description: Contains current API version
+      security:
+        - jwt: []
+components:
+  schemas:
+    LoginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    TokenResponse:
+      required:
+        - access_token
+        - refresh_token
+        - token_type
+      type: object
+      properties:
+        token_type:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    Device:
+      required:
+        - currentMeteringAt
+        - hwid
+        - nextMeteringAt
+        - quantityUnit
+      type: object
+      properties:
+        hwid:
+          type: string
+        currentMeteringAt:
+          type: string
+          format: date-time
+        nextMeteringAt:
+          type: string
+          format: date-time
+        daysReach:
+          type: integer
+          format: int32
+        validationError:
+          type: string
+          enum:
+            - NO_METERING
+            - EMPTY_METERING
+            - NO_EXTRACTED_VALUE
+            - SENSOR_CONFIG
+            - MISSING_STORAGE_CONFIG
+            - INVALID_STORAGE_CONFIG
+            - DISTANCE_TOO_SHORT
+            - ABOVE_STORAGE_MAX
+            - BELOW_STORAGE_MIN
+        batteryLevel:
+          type: string
+          enum:
+            - FULL
+            - GOOD
+            - MEDIUM
+            - WARNING
+            - CRITICAL
+        fillLevelPercent:
+          type: integer
+          format: int32
+        fillLevelQuantity:
+          type: integer
+          format: int32
+        quantityUnit:
+          type: string
+          enum:
+            - L
+            - kg
+    ItemListDevice:
+      required:
+        - items
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Device'
+
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
