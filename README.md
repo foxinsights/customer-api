@@ -28,7 +28,7 @@ At some point we might add a CLA to enable pull requests, if the interest is hig
 
 ## Documentation
 
-Please refer to the [docs](docs) folder for the API documentation
+Please refer to the [docs](docs/v1) folder for the API documentation
 
 ## Versioning
 
