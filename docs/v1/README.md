@@ -1,4 +1,4 @@
-# Customer API- Version 1 - 2021-11-08
+# Customer API - Version 1 - 2021-11-08
 
 This is the first public release of the FoxInsights Customer API
 
@@ -7,8 +7,8 @@ This is the first public release of the FoxInsights Customer API
 ### Authorization
 
 To use this API, an authorization token has to be acquired first. This is done by providing your credentials to
-the `login` endpoint. The response contains an authorization token that is valid for 15 minutes and a refresh token
-which can be used to get a new authorization token.
+the `login` endpoint. The response contains an access token that is valid for 15 minutes and a refresh token
+which can be used to get a new access and a new refresh token.
 
 #### Login
 
@@ -42,6 +42,7 @@ Response:
 ```
 curl https://api.oilfox.io/customer-api/v1/login -H 'Content-Type: application/json' --data '{"password":"mySafePassword","email":"myUser@someMailProvider.com"}'
 ```
+
 ```
 {
   "token_type": "Bearer",
@@ -59,7 +60,7 @@ authorization token.
 Request:
 
 * URL
-    * GET https://api.oilfox.io/customer-api/v1/token?refresh_token={refresh_token}
+    * POST https://api.oilfox.io/customer-api/v1/token?refresh_token={refresh_token}
 * Header
     * Content-Type: application/x-www-form-urlencoded
 
@@ -78,6 +79,7 @@ Response:
 ```
 curl https://api.oilfox.io/customer-api/v1/token --data-urlencode "refresh_token=eyJ0eXAiOiJKV[...]mFpd7W2RmOx0XGvEAIg"
 ```
+
 ```
 {
   "token_type": "Bearer",
@@ -91,41 +93,41 @@ curl https://api.oilfox.io/customer-api/v1/token --data-urlencode "refresh_token
 There are two endpoints to provide you the data of your devices: one endpoint which returns a single device and one
 which returns all your devices at once. A single device response contains the following fields:
 
-| name | type | description |
-|--- |--- |--- |
-| hwid | string | Hardware ID of the device |
-| currentMeteringAt | string | RFC3339 timestamp |
-| nextMeteringAt | string | RFC3339 timestamp |
-| daysReach | int, optional | estimated days until the storage runs empty |
-| validationError | string, optional | enum with errors regarding the measurement, see below |
-| batteryLevel | string, optional | enum of the battery level, see below |
-| fillLevelPercent | int, optional | fill level in %, 0-100 |
-| fillLevelQuantity | int, optional | fill level in `kg` or `L` | 
-| quantityUnit | string | unit of the fill level: `kg` or `L` |
+| name              | type             | description                                           |
+|-------------------|------------------|-------------------------------------------------------|
+| hwid              | string           | Hardware ID of the device                             |
+| currentMeteringAt | string           | RFC3339 timestamp                                     |
+| nextMeteringAt    | string           | RFC3339 timestamp                                     |
+| daysReach         | int, optional    | estimated days until the storage runs empty           |
+| validationError   | string, optional | enum with errors regarding the measurement, see below |
+| batteryLevel      | string, optional | enum of the battery level, see below                  |
+| fillLevelPercent  | int, optional    | fill level in %, 0-100                                |
+| fillLevelQuantity | int, optional    | fill level in `kg` or `L`                             | 
+| quantityUnit      | string           | unit of the fill level: `kg` or `L`                   |
 
 **Enum batteryLevel**
 
-| name | description |
-|--- |--- |
-| FULL |Full battery level  |
-| GOOD |  Good battery level|
-| MEDIUM | Medium battery level |
-| WARNING | Low battery level |
+| name     | description            |
+|----------|------------------------|
+| FULL     | Full battery level     |
+| GOOD     | Good battery level     |
+| MEDIUM   | Medium battery level   |
+| WARNING  | Low battery level      |
 | CRITICAL | Critical battery level |
 
 **Enum validationError**
 
-| name |description |
-|--- |--- |
-| NO_METERING | No measurement yet |
-| EMPTY_METERING | Incorrect Measurement |
-| NO_EXTRACTED_VALUE | No fill level detected |
-| SENSOR_CONFIG | Faulty measurement |
-| MISSING_STORAGE_CONFIG | Storage configuration missing |
-| INVALID_STORAGE_CONFIG | Incorrect storage configuration |
-| DISTANCE_TOO_SHORT | Measured distance too small |
-| ABOVE_STORAGE_MAX | Storage full |
-| BELOW_STORAGE_MIN | Calculated filling level implausible |
+| name                   | description                          |
+|------------------------|--------------------------------------|
+| NO_METERING            | No measurement yet                   |
+| EMPTY_METERING         | Incorrect Measurement                |
+| NO_EXTRACTED_VALUE     | No fill level detected               |
+| SENSOR_CONFIG          | Faulty measurement                   |
+| MISSING_STORAGE_CONFIG | Storage configuration missing        |
+| INVALID_STORAGE_CONFIG | Incorrect storage configuration      |
+| DISTANCE_TOO_SHORT     | Measured distance too small          |
+| ABOVE_STORAGE_MAX      | Storage full                         |
+| BELOW_STORAGE_MIN      | Calculated filling level implausible |
 
 #### Get Single Device
 
@@ -139,6 +141,7 @@ which returns all your devices at once. A single device response contains the fo
 ```
 curl https://api.oilfox.io/customer-api/v1/device/ON0123456789 -H 'Authorization: Bearer eyJ0eXAiOiJKV1[...]wXdfjS9g7P7XAt6GnOQ'
 ```
+
 ```
 {
   "hwid": "ON0123456789",
@@ -162,6 +165,7 @@ curl https://api.oilfox.io/customer-api/v1/device/ON0123456789 -H 'Authorization
 ```
 curl https://api.oilfox.io/customer-api/v1/device -H 'Authorization: Bearer eyJ0eXAiOiJKV1[...]wXdfjS9g7P7XAt6GnOQ'
 ```
+
 ```
 {
   "items": [
